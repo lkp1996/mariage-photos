@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luke & Mélissa - 12.09.2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f4ede4 0%, #e8ddd0 100%);
+            color: #6b5b4d;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            padding: 45px 20px 30px;
+        }
+        header h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5em;
+            color: #c17b5e;
+            margin-bottom: 5px;
+        }
+        header .date {
+            font-size: 1em;
+            letter-spacing: 4px;
+            color: #9c8c7a;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+        }
+        header .divider {
+            width: 60px;
+            height: 2px;
+            background: #a8b5a0;
+            margin: 0 auto 18px;
+            border-radius: 2px;
+        }
+        header .message {
+            font-size: 1em;
+            color: #8a7a68;
+            font-style: italic;
+        }
+        .upload-section {
+            max-width: 500px;
+            margin: 0 auto 45px;
+            padding: 28px;
+            background: #fdfbf8;
+            border-radius: 20px;
+            box-shadow: 0 6px 24px rgba(193, 123, 94, 0.12);
+            text-align: center;
+            border: 1px solid #e8ddd0;
+        }
+        .upload-section input[type="file"] {
+            display: none;
+        }
+        .upload-btn {
+            display: inline-block;
+            background: #c17b5e;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            border: none;
+            font-size: 1em;
+            letter-spacing: 0.5px;
+        }
+        .upload-btn:hover { background: #a8664c; }
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #9c8c7a;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 45px;
+        }
+        .gallery img, .gallery video {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 14px;
+            box-shadow: 0 3px 14px rgba(107, 91, 77, 0.15);
+            transition: transform 0.2s;
+            border: 3px solid #fdfbf8;
+        }
+        .gallery img:hover, .gallery video:hover {
+            transform: scale(1.03);
+        }
+        .empty-state {
+            text-align: center;
+            color: #a8968a;
+            padding: 40px;
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Luke & Mélissa</h1>
+        <div class="date">12 . 09 . 2026</div>
+        <div class="divider"></div>
+        <div class="message">Partagez vos souvenirs de la journée !</div>
+    </header>
+
+    <div class="upload-section">
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <label for="photoInput" class="upload-btn">📷 Ajouter des photos / vidéos</label>
+            <input type="file" name="photo" id="photoInput" accept="image/*,video/*" multiple onchange="document.getElementById('uploadForm').submit()">
+            <div class="file-name" id="fileName"></div>
+        </form>
+    </div>
+
+    <div class="gallery">
+        {% if files %}
+            {% for file in files %}
+                {% if file.endswith(('.mp4', '.mov')) %}
+                    <video src="{{ url_for('uploaded_file', filename=file) }}" controls></video>
+                {% else %}
+                    <img src="{{ url_for('uploaded_file', filename=file) }}" loading="lazy">
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">Aucune photo pour l'instant — soyez les premiers ! 💛</div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Rafraîchit la galerie automatiquement toutes les 15 secondes
+        setInterval(() => {
+            fetch('/').then(r => r.text()).then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                document.querySelector('.gallery').innerHTML = doc.querySelector('.gallery').innerHTML;
+            });
+        }, 15000);
+    </script>
+</body>
+</html>
