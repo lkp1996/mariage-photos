@@ -135,11 +135,19 @@
 
     <script>
         // Rafraîchit la galerie automatiquement toutes les 15 secondes
+        let lastCount = document.querySelectorAll('.gallery img, .gallery video').length;
+
         setInterval(() => {
             fetch('/').then(r => r.text()).then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                document.querySelector('.gallery').innerHTML = doc.querySelector('.gallery').innerHTML;
+                const newGallery = doc.querySelector('.gallery');
+                const newCount = newGallery.querySelectorAll('img, video').length;
+
+                if (newCount !== lastCount) {
+                    document.querySelector('.gallery').innerHTML = newGallery.innerHTML;
+                    lastCount = newCount;
+                }
             });
         }, 15000);
     </script>

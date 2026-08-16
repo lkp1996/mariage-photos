@@ -2,7 +2,7 @@ import qrcode
 
 # Remplace par l'URL finale une fois le service déployé sur Render
 # (ex: "https://mariage-photos.onrender.com")
-url = "https://REMPLACE-PAR-TON-URL.onrender.com"
+url = "https://mariage-luke-melissa.onrender.com"
 
 img = qrcode.make(url)
 img.save("qrcode.png")
